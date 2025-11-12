@@ -1,0 +1,25 @@
+[service]
+name = "julios-api"
+description = "JuliOS API Server"
+type = "simple"
+
+[service.exec]
+start = "/usr/bin/python3 /julios/services/api/main.py"
+stop = "/bin/kill -TERM $MAINPID"
+user = "julios"
+group = "julios"
+working_directory = "/julios/services/api"
+
+[service.dependencies]
+after = ["network.target", "jufsd.service"]
+requires = ["jufsd.service"]
+
+[service.environment]
+PYTHONPATH = "/julios/services/api"
+JULIOS_ENV = "production"
+DATABASE_URL = "sqlite:////julios/data/julios.db"
+
+[service.restart]
+policy = "on-failure"
+delay_seconds = 5
+max_retries = 3
