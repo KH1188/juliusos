@@ -1,0 +1,18 @@
+[package]
+name = "julios-ai-tools"
+version = "0.1.0"
+architecture = "x86_64"
+description = "JuliOS AI integration tools - OS-level AI commands with filesystem access"
+homepage = "https://julios.org"
+license = "MIT"
+
+[package.maintainer]
+name = "JuliOS Team"
+email = "team@julios.org"
+
+[dependencies]
+runtime = ["julios-agent", "python3"]
+
+[files]
+install_to = "/"
+preserve_config = false

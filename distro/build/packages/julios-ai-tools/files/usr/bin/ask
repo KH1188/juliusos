@@ -1,0 +1,143 @@
+#!/usr/bin/env python3
+"""
+OS-level AI assistant with full filesystem access
+Integrates with julios-agent service
+"""
+
+import sys
+import json
+import requests
+import os
+from pathlib import Path
+
+AGENT_URL = os.getenv("JULIOS_AGENT_URL", "http://localhost:8001")
+
+def read_file_context(path, max_lines=50):
+    """Read file with size limit for context"""
+    try:
+        p = Path(path).expanduser()
+        if not p.exists():
+            return None
+
+        if p.is_dir():
+            # List directory contents
+            items = list(p.iterdir())[:20]
+            return f"Directory listing ({len(items)} items):\n" + "\n".join(str(i) for i in items)
+
+        if p.stat().st_size > 1024 * 1024:  # 1MB limit
+            return f"File too large: {p.stat().st_size} bytes"
+
+        with open(p) as f:
+            lines = f.readlines()[:max_lines]
+            content = "".join(lines)
+            if len(lines) >= max_lines:
+                content += f"\n... ({len(lines)} total lines, showing first {max_lines})"
+            return content
+    except Exception as e:
+        return f"Error reading {path}: {e}"
+
+def get_system_context():
+    """Gather system context for AI"""
+    context = {
+        "user": os.getenv("USER", "unknown"),
+        "hostname": os.uname().nodename,
+        "cwd": os.getcwd(),
+        "home": str(Path.home()),
+    }
+
+    # Recent command history (if available)
+    hist_file = Path.home() / ".jush_history"
+    if hist_file.exists():
+        try:
+            with open(hist_file) as f:
+                lines = f.readlines()
+                context["recent_commands"] = lines[-10:]  # Last 10 commands
+        except:
+            pass
+
+    return context
+
+def ask_ai(question, include_file=None):
+    """Send question to AI agent with optional file context"""
+
+    # Build context
+    system_ctx = get_system_context()
+    context_parts = [
+        f"System: {system_ctx['hostname']}",
+        f"User: {system_ctx['user']}",
+        f"Working directory: {system_ctx['cwd']}",
+    ]
+
+    # Add file context if specified
+    if include_file:
+        file_content = read_file_context(include_file)
+        if file_content:
+            context_parts.append(f"\nFile: {include_file}\n```\n{file_content}\n```")
+
+    # Add recent commands
+    if "recent_commands" in system_ctx:
+        context_parts.append(f"\nRecent commands:\n" + "".join(system_ctx["recent_commands"][-5:]))
+
+    full_context = "\n".join(context_parts)
+    full_question = f"{full_context}\n\nQuestion: {question}"
+
+    try:
+        response = requests.post(
+            f"{AGENT_URL}/ask",
+            json={"question": full_question},
+            timeout=30
+        )
+        response.raise_for_status()
+        data = response.json()
+        return data.get("answer", "No response from AI")
+
+    except requests.exceptions.ConnectionError:
+        return "Error: Cannot connect to julios-agent service. Is it running?\n  Start with: juinit start julios-agent"
+    except requests.exceptions.Timeout:
+        return "Error: AI request timed out"
+    except Exception as e:
+        return f"Error: {e}"
+
+def main():
+    if len(sys.argv) < 2:
+        print("Usage:")
+        print("  ask 'your question'")
+        print("  ask 'explain this file' -f /path/to/file")
+        print("  ask 'what does this do?' -f script.sh")
+        print("")
+        print("Examples:")
+        print("  ask 'What files are in my home directory?'")
+        print("  ask 'How do I check disk usage?'")
+        print("  ask 'Explain this code' -f myprogram.py")
+        print("  ask 'Summarize this log' -f /var/log/syslog")
+        sys.exit(1)
+
+    # Parse arguments
+    question = None
+    include_file = None
+
+    args = sys.argv[1:]
+    if '-f' in args:
+        idx = args.index('-f')
+        if idx + 1 < len(args):
+            include_file = args[idx + 1]
+            question = " ".join(args[:idx] + args[idx+2:])
+    else:
+        question = " ".join(args)
+
+    if not question:
+        print("Error: No question provided")
+        sys.exit(1)
+
+    # Ask AI
+    print(f"🤖 Asking AI: {question}")
+    if include_file:
+        print(f"📄 Including file: {include_file}")
+    print("")
+
+    answer = ask_ai(question, include_file)
+    print(answer)
+    print("")
+
+if __name__ == "__main__":
+    main()

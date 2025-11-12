@@ -1,0 +1,10 @@
+#!/bin/sh
+# Simple hello world program
+
+echo "Hello from JuliOS!"
+echo "This is a test package installed via jupm"
+echo ""
+echo "System information:"
+echo "  Hostname: $(hostname)"
+echo "  User: $(whoami)"
+echo "  Date: $(date)"

@@ -1,0 +1,18 @@
+[package]
+name = "hello-world"
+version = "1.0.0"
+architecture = "x86_64"
+description = "Simple hello world program for JuliOS"
+homepage = "https://julios.org"
+license = "MIT"
+
+[package.maintainer]
+name = "JuliOS Team"
+email = "team@julios.org"
+
+[dependencies]
+runtime = []
+
+[files]
+install_to = "/"
+preserve_config = false

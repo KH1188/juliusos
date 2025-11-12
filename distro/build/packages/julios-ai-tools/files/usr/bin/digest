@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+"""
+Generate daily digest from system activities
+"""
+
+import sys
+import requests
+import os
+
+AGENT_URL = os.getenv("JULIOS_AGENT_URL", "http://localhost:8001")
+
+def get_digest():
+    """Get daily digest from AI agent"""
+    try:
+        response = requests.post(
+            f"{AGENT_URL}/digest/daily",
+            json={},
+            timeout=60
+        )
+        response.raise_for_status()
+        data = response.json()
+        return data.get("digest", "No digest available")
+
+    except requests.exceptions.ConnectionError:
+        return "Error: Cannot connect to julios-agent service.\n  Start with: juinit start julios-agent"
+    except Exception as e:
+        return f"Error: {e}"
+
+def main():
+    print("📊 Generating daily digest...")
+    print("")
+
+    digest = get_digest()
+    print(digest)
+    print("")
+
+if __name__ == "__main__":
+    main()
