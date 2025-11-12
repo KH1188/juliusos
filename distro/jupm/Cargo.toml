@@ -27,6 +27,9 @@ futures = "0.3"
 [dev-dependencies]
 tempfile = "3.8"
 
+[dependencies.tempfile]
+version = "3.8"
+
 [[bin]]
 name = "jupm"
 path = "src/main.rs"

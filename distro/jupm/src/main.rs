@@ -5,6 +5,7 @@ mod database;
 mod package;
 mod repository;
 mod installer;
+mod resolver;
 
 #[derive(Parser)]
 #[command(name = "jupm")]
