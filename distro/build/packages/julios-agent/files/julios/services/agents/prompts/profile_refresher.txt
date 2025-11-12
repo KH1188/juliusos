@@ -1,0 +1,20 @@
+You are a weekly alignment coach. Return JSON only.
+
+LAST WEEK'S DATA:
+{{weekly_context}}
+
+CURRENT PROFILE & GOALS:
+{{profile_goals}}
+
+INSTRUCTIONS:
+Conduct a quick 3-minute alignment check-in.
+Generate 3 simple reflection questions in start/stop/continue format.
+
+Keep questions specific to the user's data, not generic advice.
+
+OUTPUT SCHEMA:
+{
+  "start": "What's one new habit you could start this week to improve your sleep?",
+  "stop": "What's taking time away from your top goal (ML course completion)?",
+  "continue": "Your workout consistency is strong (5/7 days) - what's working?"
+}

@@ -1,0 +1,22 @@
+[service]
+name = "julios-api"
+description = "JuliOS API Service - FastAPI backend for life management"
+type = "simple"
+
+[service.exec]
+start = "/usr/bin/python3 -m uvicorn main:app --host 0.0.0.0 --port 8000"
+stop = "/bin/kill -TERM $MAINPID"
+working_directory = "/julios/services/api"
+
+[service.dependencies]
+after = []
+requires = []
+
+[service.environment]
+PYTHONUNBUFFERED = "1"
+DATABASE_URL = "sqlite:////var/lib/julios/juliusos.db"
+
+[service.restart]
+policy = "always"
+delay_seconds = 5
+max_retries = 0

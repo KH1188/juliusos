@@ -1,0 +1,23 @@
+[service]
+name = "julios-agent"
+description = "JuliOS AI Agent Service - Ollama-powered intelligent assistant"
+type = "simple"
+
+[service.exec]
+start = "/usr/bin/python3 -m uvicorn main:app --host 0.0.0.0 --port 8001"
+stop = "/bin/kill -TERM $MAINPID"
+working_directory = "/julios/services/agents"
+
+[service.dependencies]
+after = ["julios-api"]
+requires = ["julios-api"]
+
+[service.environment]
+PYTHONUNBUFFERED = "1"
+OLLAMA_HOST = "http://localhost:11434"
+API_URL = "http://localhost:8000"
+
+[service.restart]
+policy = "always"
+delay_seconds = 5
+max_retries = 0
