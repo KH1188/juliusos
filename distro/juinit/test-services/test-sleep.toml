@@ -1,0 +1,17 @@
+[service]
+name = "test-sleep"
+description = "Long-running test service that sleeps"
+type = "simple"
+
+[service.exec]
+start = "/bin/sleep 3600"
+stop = "/bin/kill -TERM $MAINPID"
+
+[service.dependencies]
+after = []
+requires = []
+
+[service.restart]
+policy = "on-failure"
+delay_seconds = 5
+max_retries = 3

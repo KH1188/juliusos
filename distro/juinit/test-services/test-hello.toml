@@ -1,0 +1,18 @@
+[service]
+name = "test-hello"
+description = "Simple test service that prints hello"
+type = "oneshot"
+
+[service.exec]
+start = "/bin/echo Hello from test service!"
+user = "root"
+
+[service.dependencies]
+after = []
+requires = []
+
+[service.environment]
+TEST_VAR = "hello"
+
+[service.restart]
+policy = "no"

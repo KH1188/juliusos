@@ -1,0 +1,21 @@
+[service]
+name = "test-python"
+description = "Python HTTP server test service"
+type = "simple"
+
+[service.exec]
+start = "/usr/bin/python3 -m http.server 8888"
+stop = "/bin/kill -TERM $MAINPID"
+working_directory = "/tmp"
+
+[service.dependencies]
+after = []
+requires = []
+
+[service.environment]
+PYTHONUNBUFFERED = "1"
+
+[service.restart]
+policy = "on-failure"
+delay_seconds = 5
+max_retries = 3

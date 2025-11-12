@@ -9,6 +9,7 @@ use tracing::{info, error, warn};
 
 use crate::config::{get_service_dir, load_all_services};
 use crate::service::{ServiceInstance, ServiceState, ServiceDefinition};
+use crate::ipc::{start_ipc_server, IpcRequest, IpcResponse, ServiceStatus};
 
 pub struct Daemon {
     services: Arc<RwLock<HashMap<String, ServiceInstance>>>,
@@ -42,9 +43,51 @@ impl Daemon {
     fn mount_essential_filesystems() -> Result<()> {
         info!("Mounting essential filesystems...");
 
-        // TODO: Mount /proc, /sys, /dev, /run
-        // This requires root privileges and should only run as PID 1
-        // For now, we'll skip this in development mode
+        use std::process::Command;
+        use std::path::Path;
+
+        // Essential filesystem mounts for an init system
+        let mounts = vec![
+            ("/proc", "proc", "proc", "nosuid,noexec,nodev"),
+            ("/sys", "sysfs", "sysfs", "nosuid,noexec,nodev"),
+            ("/dev", "devtmpfs", "devtmpfs", "mode=0755,nosuid"),
+            ("/dev/pts", "devpts", "devpts", "mode=0620,gid=5,nosuid,noexec"),
+            ("/dev/shm", "tmpfs", "tmpfs", "mode=1777,nosuid,nodev"),
+            ("/run", "tmpfs", "tmpfs", "mode=0755,nosuid,nodev"),
+            ("/tmp", "tmpfs", "tmpfs", "mode=1777,nosuid,nodev"),
+        ];
+
+        for (mountpoint, fstype, source, options) in mounts {
+            // Check if already mounted
+            if Path::new(mountpoint).exists() {
+                // Create mountpoint if it doesn't exist
+                if !Path::new(mountpoint).is_dir() {
+                    std::fs::create_dir_all(mountpoint)
+                        .context(format!("Failed to create mountpoint {}", mountpoint))?;
+                }
+
+                // Try to mount (this will fail if not running as root/PID 1)
+                let output = Command::new("mount")
+                    .args(&["-t", fstype, "-o", options, source, mountpoint])
+                    .output();
+
+                match output {
+                    Ok(out) if out.status.success() => {
+                        info!("Mounted {} at {}", source, mountpoint);
+                    }
+                    Ok(out) => {
+                        let stderr = String::from_utf8_lossy(&out.stderr);
+                        // Ignore "already mounted" errors
+                        if !stderr.contains("already mounted") {
+                            warn!("Failed to mount {}: {}", mountpoint, stderr);
+                        }
+                    }
+                    Err(e) => {
+                        warn!("Failed to execute mount for {}: {}", mountpoint, e);
+                    }
+                }
+            }
+        }
 
         Ok(())
     }
@@ -173,13 +216,112 @@ impl Daemon {
             }
         }
     }
+
+    /// Get status of all services or a specific service
+    pub async fn get_status(&self, name: Option<&str>) -> Vec<ServiceStatus> {
+        let services = self.services.read().await;
+
+        if let Some(n) = name {
+            // Single service
+            if let Some(svc) = services.get(n) {
+                vec![ServiceStatus {
+                    name: n.to_string(),
+                    state: format!("{:?}", svc.state),
+                    pid: svc.pid,
+                    enabled: false, // TODO: Check if enabled
+                }]
+            } else {
+                vec![]
+            }
+        } else {
+            // All services
+            services
+                .iter()
+                .map(|(name, svc)| ServiceStatus {
+                    name: name.clone(),
+                    state: format!("{:?}", svc.state),
+                    pid: svc.pid,
+                    enabled: false, // TODO: Check if enabled
+                })
+                .collect()
+        }
+    }
+
+    /// List all service names
+    pub async fn list_services(&self) -> Vec<String> {
+        let services = self.services.read().await;
+        services.keys().cloned().collect()
+    }
+
+    /// Handle an IPC request
+    pub async fn handle_ipc_request(&self, request: IpcRequest) -> IpcResponse {
+        match request {
+            IpcRequest::StartService { name } => {
+                match self.start_service(&name).await {
+                    Ok(_) => IpcResponse::Success {
+                        message: format!("Service '{}' started", name),
+                    },
+                    Err(e) => IpcResponse::Error {
+                        message: format!("Failed to start service '{}': {}", name, e),
+                    },
+                }
+            }
+            IpcRequest::StopService { name } => {
+                match self.stop_service(&name).await {
+                    Ok(_) => IpcResponse::Success {
+                        message: format!("Service '{}' stopped", name),
+                    },
+                    Err(e) => IpcResponse::Error {
+                        message: format!("Failed to stop service '{}': {}", name, e),
+                    },
+                }
+            }
+            IpcRequest::RestartService { name } => {
+                let _ = self.stop_service(&name).await;
+                match self.start_service(&name).await {
+                    Ok(_) => IpcResponse::Success {
+                        message: format!("Service '{}' restarted", name),
+                    },
+                    Err(e) => IpcResponse::Error {
+                        message: format!("Failed to restart service '{}': {}", name, e),
+                    },
+                }
+            }
+            IpcRequest::GetStatus { name } => {
+                let services = self.get_status(name.as_deref()).await;
+                IpcResponse::Status { services }
+            }
+            IpcRequest::ListServices => {
+                let services = self.list_services().await;
+                IpcResponse::ServiceList { services }
+            }
+            IpcRequest::EnableService { name } => {
+                // TODO: Implement enable/disable
+                IpcResponse::Error {
+                    message: "Enable/disable not yet implemented".to_string(),
+                }
+            }
+            IpcRequest::DisableService { name } => {
+                // TODO: Implement enable/disable
+                IpcResponse::Error {
+                    message: "Enable/disable not yet implemented".to_string(),
+                }
+            }
+            IpcRequest::ReloadDaemon => {
+                // TODO: Reload service definitions
+                IpcResponse::Success {
+                    message: "Configuration reloaded".to_string(),
+                }
+            }
+        }
+    }
 }
 
 /// Run the init daemon as PID 1
 pub async fn run() -> Result<()> {
     info!("juinit daemon starting...");
 
-    let daemon = Daemon::new();
+    let daemon = Arc::new(Daemon::new());
 
     // Step 1: Mount essential filesystems (if PID 1)
     if std::process::id() == 1 {
@@ -191,15 +333,29 @@ pub async fn run() -> Result<()> {
     // Step 2: Load service definitions
     daemon.load_services().await?;
 
-    // Step 3: Start default services
+    // Step 3: Start IPC server
+    let daemon_for_ipc = daemon.clone();
+    tokio::spawn(async move {
+        if let Err(e) = start_ipc_server(move |request| {
+            // We need to block on the async handler
+            let daemon = daemon_for_ipc.clone();
+            tokio::runtime::Handle::current().block_on(async {
+                daemon.handle_ipc_request(request).await
+            })
+        }).await {
+            error!("IPC server error: {}", e);
+        }
+    });
+
+    // Step 4: Start default services
     // TODO: Implement target system and start default.target
 
-    // Step 4: Set up signal handlers
+    // Step 5: Set up signal handlers
     // TODO: Handle SIGCHLD for process reaping, SIGTERM for shutdown
 
     info!("System initialization complete");
 
-    // Step 5: Main event loop
+    // Step 6: Main event loop
     loop {
         tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
         daemon.monitor_services().await;
