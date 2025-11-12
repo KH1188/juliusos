@@ -100,3 +100,49 @@ install-deps-mac: ## Install system dependencies on macOS
 	@echo "📦 Installing system dependencies for macOS..."
 	brew install python3 node pnpm rust
 	@echo "✅ System dependencies installed!"
+
+# ============================================
+# OS Distribution Build Targets
+# ============================================
+
+build-distro: build-juinit build-jupm build-jush ## Build all OS distribution components
+	@echo "✅ All distro components built!"
+
+build-juinit: ## Build juinit init system
+	@echo "🔨 Building juinit..."
+	cd distro/juinit && cargo build --release
+	@echo "✅ juinit built at distro/juinit/target/release/juinit"
+
+build-jupm: ## Build jupm package manager
+	@echo "🔨 Building jupm..."
+	cd distro/jupm && cargo build --release
+	@echo "✅ jupm built at distro/jupm/target/release/jupm"
+
+build-jush: ## Build jush shell
+	@echo "🔨 Building jush..."
+	cd distro/jush && cargo build --release
+	@echo "✅ jush built at distro/jush/target/release/jush"
+
+test-distro: ## Test OS distribution components
+	@echo "🧪 Testing distro components..."
+	cd distro/juinit && cargo test
+	cd distro/jupm && cargo test
+	cd distro/jush && cargo test
+	@echo "✅ All distro tests passed!"
+
+clean-distro: ## Clean OS distribution build artifacts
+	@echo "🧹 Cleaning distro builds..."
+	rm -rf distro/juinit/target
+	rm -rf distro/jupm/target
+	rm -rf distro/jush/target
+	@echo "✅ Distro clean complete!"
+
+iso: ## Create bootable ISO (not yet implemented)
+	@echo "📀 Creating bootable ISO..."
+	@echo "❌ ISO creation not yet implemented"
+	@echo "   This will create a bootable JuliOS ISO image"
+
+test-vm: ## Test in QEMU (not yet implemented)
+	@echo "🖥️  Testing in QEMU..."
+	@echo "❌ VM testing not yet implemented"
+	@echo "   This will boot JuliOS in QEMU for testing"

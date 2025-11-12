@@ -6,6 +6,7 @@ mod daemon;
 mod service;
 mod cli;
 mod config;
+mod ipc;
 
 #[derive(Parser)]
 #[command(name = "juinit")]

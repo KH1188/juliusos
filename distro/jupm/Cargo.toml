@@ -1,0 +1,38 @@
+[package]
+name = "jupm"
+version = "0.1.0"
+edition = "2021"
+authors = ["JuliOS Team"]
+description = "JuliOS Package Manager - Debian-compatible package management"
+license = "MIT"
+
+[dependencies]
+tokio = { version = "1.35", features = ["full"] }
+anyhow = "1.0"
+thiserror = "1.0"
+clap = { version = "4.4", features = ["derive"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.8"
+reqwest = { version = "0.11", features = ["json", "stream"] }
+tar = "0.4"
+flate2 = "1.0"
+zstd = "0.13"
+sha2 = "0.10"
+sqlx = { version = "0.7", features = ["runtime-tokio-native-tls", "sqlite"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+futures = "0.3"
+
+[dev-dependencies]
+tempfile = "3.8"
+
+[[bin]]
+name = "jupm"
+path = "src/main.rs"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
