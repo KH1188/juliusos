@@ -2,7 +2,7 @@
 import json
 from pathlib import Path
 from datetime import datetime, timedelta
-from ..core.ollama_client import OllamaClient
+from agent_core.ollama_client import OllamaClient
 import httpx
 
 

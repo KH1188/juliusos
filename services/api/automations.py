@@ -4,8 +4,8 @@ from apscheduler.triggers.cron import CronTrigger
 from datetime import datetime
 import httpx
 import logging
-from .database import SessionLocal
-from .models import AutomationRule, AutomationLog
+from database import SessionLocal
+from models import AutomationRule, AutomationLog
 import json
 
 logger = logging.getLogger(__name__)

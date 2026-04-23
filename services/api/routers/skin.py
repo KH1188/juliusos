@@ -3,14 +3,14 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime
-from ..database import get_db
-from ..models import SkinProduct, SkinRoutine, SkinLog, User
-from ..schemas import (
+from database import get_db
+from models import SkinProduct, SkinRoutine, SkinLog, User
+from schemas import (
     SkinProductCreate, SkinProductResponse,
     SkinRoutineCreate, SkinRoutineResponse,
     SkinLogCreate, SkinLogResponse
 )
-from .settings import get_default_user
+from routers.settings import get_default_user
 
 router = APIRouter()
 

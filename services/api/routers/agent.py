@@ -1,10 +1,10 @@
 """Agent endpoints router."""
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from ..database import get_db
-from ..models import User
-from ..schemas import AgentAskRequest, AgentAskResponse, DailyDigestResponse, WeeklyReviewResponse
-from .settings import get_default_user
+from database import get_db
+from models import User
+from schemas import AgentAskRequest, AgentAskResponse, DailyDigestResponse, WeeklyReviewResponse
+from routers.settings import get_default_user
 import httpx
 import os
 

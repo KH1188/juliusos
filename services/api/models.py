@@ -5,7 +5,7 @@ from sqlalchemy import (
     ForeignKey, Index, JSON
 )
 from sqlalchemy.orm import relationship
-from .database import Base
+from database import Base
 
 
 # Core & Identity

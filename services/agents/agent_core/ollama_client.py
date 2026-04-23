@@ -2,7 +2,7 @@
 import httpx
 from typing import Optional, Dict, Any, List
 from tenacity import retry, stop_after_attempt, wait_exponential
-from ..config import settings
+from agent_config import settings
 import json
 
 

@@ -3,18 +3,18 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, Dict, Any
-from .recipes.daily_digest import run_daily_digest
-from .recipes.weekly_review import run_weekly_review
-from .recipes.bible_reflector import run_bible_reflector
-from .recipes.macro_coach import run_macro_coach
-from .recipes.schedule_rebalancer import run_schedule_rebalancer
-from .recipes.profile_update import run_profile_update
-from .recipes.next_best_step import run_next_best_step
-from .recipes.skin_coach import run_skin_coach
-from .recipes.chat_assistant import run_chat_assistant
-from .recipes.code_assistant import run_code_assistant
-from .core.ollama_client import OllamaClient
-from .core.context_builder import ContextBuilder
+from recipes.daily_digest import run_daily_digest
+from recipes.weekly_review import run_weekly_review
+from recipes.bible_reflector import run_bible_reflector
+from recipes.macro_coach import run_macro_coach
+from recipes.schedule_rebalancer import run_schedule_rebalancer
+from recipes.profile_update import run_profile_update
+from recipes.next_best_step import run_next_best_step
+from recipes.skin_coach import run_skin_coach
+from recipes.chat_assistant import run_chat_assistant
+from recipes.code_assistant import run_code_assistant
+from agent_core.ollama_client import OllamaClient
+from agent_core.context_builder import ContextBuilder
 import json
 
 app = FastAPI(
@@ -26,7 +26,7 @@ app = FastAPI(
 # CORS middleware for local development
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:1420", "tauri://localhost"],
+    allow_origins=["*"],  # Allow all origins for local development
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

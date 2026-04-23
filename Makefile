@@ -35,24 +35,31 @@ seed: ## Load seed data
 dev: ## Start all services in development mode
 	@echo "🚀 Starting JuliusOS in development mode..."
 	@echo "Starting API server on port 8000..."
-	@cd services/api && . venv/bin/activate && python -m api.main &
+	@cd services/api && . venv/bin/activate && PYTHONPATH=. uvicorn main:app --host 0.0.0.0 --port 8000 --reload &
 	@echo "Starting Agent service on port 8001..."
-	@cd services/agents && . venv/bin/activate && python -m agents.main &
+	@cd services/agents && . venv/bin/activate && PYTHONPATH=. uvicorn main:app --host 0.0.0.0 --port 8001 --reload &
 	@echo "Starting Tauri desktop app..."
 	@cd apps/desktop && npm run tauri dev
 	@echo "✅ All services started!"
 
 dev-api: ## Start only the API server
 	@echo "🚀 Starting API server..."
-	cd services/api && . venv/bin/activate && python -m api.main
+	cd services/api && . venv/bin/activate && PYTHONPATH=. uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
 dev-agent: ## Start only the Agent service
 	@echo "🚀 Starting Agent service..."
-	cd services/agents && . venv/bin/activate && python -m agents.main
+	cd services/agents && . venv/bin/activate && PYTHONPATH=. uvicorn main:app --host 0.0.0.0 --port 8001 --reload
 
 dev-ui: ## Start only the UI
 	@echo "🚀 Starting desktop app..."
 	cd apps/desktop && npm run dev
+
+run: ## Start services and launch mode selector
+	@echo "🚀 Starting JuliusOS..."
+	@nohup make dev-api > /tmp/api.log 2>&1 & \
+	nohup make dev-agent > /tmp/agent.log 2>&1 & \
+	sleep 3 && \
+	python3 /home/julius/juliusos/opt/julios/mode-selector/mode-selector.py
 
 test: ## Run all tests
 	@echo "🧪 Running tests..."
@@ -146,3 +153,13 @@ test-vm: ## Test in QEMU (not yet implemented)
 	@echo "🖥️  Testing in QEMU..."
 	@echo "❌ VM testing not yet implemented"
 	@echo "   This will boot JuliOS in QEMU for testing"
+
+# ============================================
+# Showcase OS Targets
+# ============================================
+
+mode-selector: ## Launch the JuliOS Mode Selector
+	@echo "🚀 Launching JuliOS Mode Selector..."
+	@python3 opt/julios/mode-selector/mode-selector.py
+
+showcase: mode-selector ## Alias for mode-selector

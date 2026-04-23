@@ -3,10 +3,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime
-from ..database import get_db
-from ..models import Contact, Interaction, User
-from ..schemas import ContactCreate, ContactUpdate, ContactResponse, InteractionCreate, InteractionResponse
-from .settings import get_default_user
+from database import get_db
+from models import Contact, Interaction, User
+from schemas import ContactCreate, ContactUpdate, ContactResponse, InteractionCreate, InteractionResponse
+from routers.settings import get_default_user
 
 router = APIRouter()
 

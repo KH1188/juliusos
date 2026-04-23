@@ -2,8 +2,8 @@
 import json
 from pathlib import Path
 from datetime import datetime, timedelta
-from ..core.ollama_client import OllamaClient
-from ..core.context_builder import ContextBuilder
+from agent_core.ollama_client import OllamaClient
+from agent_core.context_builder import ContextBuilder
 
 
 async def run_next_best_step(user_id: int) -> dict:

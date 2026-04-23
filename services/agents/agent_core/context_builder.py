@@ -2,7 +2,7 @@
 import httpx
 from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
-from ..config import settings
+from agent_config import settings
 
 
 class ContextBuilder:

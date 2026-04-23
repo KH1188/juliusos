@@ -1,9 +1,9 @@
 """Bible reflection recipe."""
 import json
 from pathlib import Path
-from ..core.ollama_client import OllamaClient
-from ..core.context_builder import ContextBuilder
-from ..config import settings
+from agent_core.ollama_client import OllamaClient
+from agent_core.context_builder import ContextBuilder
+from agent_config import settings
 
 
 async def run_bible_reflector(user_id: int, passage: str) -> dict:

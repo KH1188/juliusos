@@ -1,13 +1,13 @@
 """Main FastAPI application for JuliusOS."""
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .database import engine, Base
-from .config import settings
-from .routers import (
+from database import engine, Base
+from app_config import settings
+from routers import (
     health, settings as settings_router, calendar, tasks, habits,
     meals, workouts, sleep, projects, skills, journal, notes,
     bible, finances, contacts, routines, goals, automations, agent,
-    skin, profile, relationships
+    skin, profile, relationships, files, terminal, calendar_events, emails
 )
 
 # Create database tables
@@ -22,7 +22,7 @@ app = FastAPI(
 # CORS middleware for local development
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:1420", "tauri://localhost"],  # Tauri dev + prod
+    allow_origins=["*"],  # Allow all origins for local development
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -51,12 +51,16 @@ app.include_router(agent.router, prefix="/agent", tags=["agent"])
 app.include_router(skin.router, prefix="/skin", tags=["skin"])
 app.include_router(profile.router, prefix="/profile", tags=["profile"])
 app.include_router(relationships.router, prefix="/relationships", tags=["relationships"])
+app.include_router(files.router, prefix="/files", tags=["files"])
+app.include_router(terminal.router, prefix="/terminal", tags=["terminal"])
+app.include_router(calendar_events.router, prefix="/calendar-events", tags=["calendar-events"])
+app.include_router(emails.router, prefix="/emails", tags=["emails"])
 
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
-        "api.main:app",
+        "main:app",
         host=settings.api_host,
         port=settings.api_port,
         reload=settings.api_reload,

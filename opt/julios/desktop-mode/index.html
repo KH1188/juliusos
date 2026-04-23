@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JuliOS Desktop</title>
+    <link rel="stylesheet" href="css/amiga.css">
+</head>
+<body>
+    <!-- Top Menu Bar (Amiga Workbench style) -->
+    <div class="menu-bar">
+        <div class="menu-bar-left">
+            <span class="menu-item active">JuliOS 1.0</span>
+            <span class="menu-item">Apps</span>
+            <span class="menu-item">Tools</span>
+            <span class="menu-item">Prefs</span>
+        </div>
+        <div class="menu-bar-right">
+            <span class="clock" id="clock">00:00:00</span>
+            <span class="visitor-count" id="visitor-count">Visitor #1</span>
+        </div>
+    </div>
+
+    <!-- Desktop Area -->
+    <div class="desktop" id="desktop">
+        <!-- Desktop Icons -->
+        <div class="icon-grid">
+            <!-- System Apps -->
+            <div class="desktop-icon" data-app="files">
+                <div class="icon-image">📁</div>
+                <div class="icon-label">Files</div>
+            </div>
+            <div class="desktop-icon" data-app="terminal">
+                <div class="icon-image">⌨️</div>
+                <div class="icon-label">Terminal</div>
+            </div>
+            <div class="desktop-icon" data-app="system-monitor">
+                <div class="icon-image">📊</div>
+                <div class="icon-label">System</div>
+            </div>
+            <div class="desktop-icon" data-app="calculator">
+                <div class="icon-image">🔢</div>
+                <div class="icon-label">Calculator</div>
+            </div>
+            <div class="desktop-icon" data-app="settings">
+                <div class="icon-image">⚙️</div>
+                <div class="icon-label">Settings</div>
+            </div>
+
+            <!-- Productivity Apps -->
+            <div class="desktop-icon" data-app="text-editor">
+                <div class="icon-image">📝</div>
+                <div class="icon-label">Text Editor</div>
+            </div>
+            <div class="desktop-icon" data-app="email">
+                <div class="icon-image">📧</div>
+                <div class="icon-label">Email</div>
+            </div>
+            <div class="desktop-icon" data-app="calendar">
+                <div class="icon-image">📅</div>
+                <div class="icon-label">Calendar</div>
+            </div>
+            <div class="desktop-icon" data-app="notes">
+                <div class="icon-image">📒</div>
+                <div class="icon-label">Notes</div>
+            </div>
+
+            <!-- Media Apps -->
+            <div class="desktop-icon" data-app="music">
+                <div class="icon-image">🎵</div>
+                <div class="icon-label">Music</div>
+            </div>
+            <div class="desktop-icon" data-app="video">
+                <div class="icon-image">🎬</div>
+                <div class="icon-label">Videos</div>
+            </div>
+            <div class="desktop-icon" data-app="photos">
+                <div class="icon-image">🖼️</div>
+                <div class="icon-label">Photos</div>
+            </div>
+
+            <!-- Network Apps -->
+            <div class="desktop-icon" data-app="browser">
+                <div class="icon-image">🌐</div>
+                <div class="icon-label">Browser</div>
+            </div>
+            <div class="desktop-icon" data-app="transfer">
+                <div class="icon-image">📡</div>
+                <div class="icon-label">Transfers</div>
+            </div>
+
+            <!-- AI Life Management Apps -->
+            <div class="desktop-icon" data-app="daily-digest">
+                <div class="icon-image">📋</div>
+                <div class="icon-label">Daily Digest</div>
+            </div>
+            <div class="desktop-icon" data-app="tasks">
+                <div class="icon-image">✓</div>
+                <div class="icon-label">Tasks</div>
+            </div>
+            <div class="desktop-icon" data-app="habits">
+                <div class="icon-image">🔄</div>
+                <div class="icon-label">Habits</div>
+            </div>
+            <div class="desktop-icon" data-app="journal">
+                <div class="icon-image">📔</div>
+                <div class="icon-label">Journal</div>
+            </div>
+            <div class="desktop-icon" data-app="health">
+                <div class="icon-image">🏃</div>
+                <div class="icon-label">Health</div>
+            </div>
+            <div class="desktop-icon" data-app="bible">
+                <div class="icon-image">📖</div>
+                <div class="icon-label">Bible Study</div>
+            </div>
+            <div class="desktop-icon" data-app="finances">
+                <div class="icon-image">💰</div>
+                <div class="icon-label">Finances</div>
+            </div>
+            <div class="desktop-icon" data-app="projects">
+                <div class="icon-image">🚀</div>
+                <div class="icon-label">Projects</div>
+            </div>
+        </div>
+
+        <!-- Windows Container -->
+        <div id="windows-container"></div>
+    </div>
+
+    <!-- Bottom Chat Assistant Bar -->
+    <div class="chat-taskbar" id="chat-taskbar">
+        <div class="chat-taskbar-header" id="chat-header">
+            <span class="chat-taskbar-title">💬 Chat Assistant</span>
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <div class="chat-taskbar-status">
+                    <span id="api-status">🟢 API</span>
+                    <span id="agent-status">🟢 Agent</span>
+                </div>
+                <button id="toggle-chat" style="background: transparent; border: none; color: #8b5cf6; cursor: pointer; font-size: 18px; padding: 4px 8px;">▼</button>
+            </div>
+        </div>
+        <div class="chat-taskbar-content" id="chat-content">
+            <div class="chat-taskbar-messages" id="taskbar-messages"></div>
+            <div class="chat-taskbar-input">
+                <input type="text" id="taskbar-chat-input" placeholder="Ask me anything..." />
+                <button id="taskbar-chat-send">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/window-manager.js"></script>
+    <script src="js/api-client.js"></script>
+    <script src="js/desktop.js"></script>
+</body>
+</html>

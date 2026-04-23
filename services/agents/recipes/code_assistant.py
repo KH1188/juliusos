@@ -5,8 +5,8 @@ import os
 import json
 from pathlib import Path
 from typing import Optional, Dict, Any, List
-from ..core.context_builder import ContextBuilder
-from ..core.ollama_client import OllamaClient
+from agent_core.context_builder import ContextBuilder
+from agent_core.ollama_client import OllamaClient
 
 
 async def run_code_assistant(user_id: int, message: str, files: Optional[List[str]] = None, operation: Optional[str] = None) -> dict:

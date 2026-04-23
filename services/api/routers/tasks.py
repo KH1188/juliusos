@@ -2,10 +2,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from ..database import get_db
-from ..models import Task, User
-from ..schemas import TaskCreate, TaskUpdate, TaskResponse
-from .settings import get_default_user
+from database import get_db
+from models import Task, User
+from schemas import TaskCreate, TaskUpdate, TaskResponse
+from routers.settings import get_default_user
 
 router = APIRouter()
 

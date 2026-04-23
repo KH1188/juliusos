@@ -3,10 +3,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime
-from ..database import get_db
-from ..models import Meal, User
-from ..schemas import MealCreate, MealResponse
-from .settings import get_default_user
+from database import get_db
+from models import Meal, User
+from schemas import MealCreate, MealResponse
+from routers.settings import get_default_user
 
 router = APIRouter()
 

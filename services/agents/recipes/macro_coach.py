@@ -2,8 +2,8 @@
 import json
 from pathlib import Path
 from datetime import datetime
-from ..core.ollama_client import OllamaClient
-from ..core.context_builder import ContextBuilder
+from agent_core.ollama_client import OllamaClient
+from agent_core.context_builder import ContextBuilder
 
 
 async def run_macro_coach(user_id: int, targets: dict = None) -> dict:

@@ -2,10 +2,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
-from ..database import get_db
-from ..models import Note, NoteLink, User
-from ..schemas import NoteCreate, NoteUpdate, NoteResponse
-from .settings import get_default_user
+from database import get_db
+from models import Note, NoteLink, User
+from schemas import NoteCreate, NoteUpdate, NoteResponse
+from routers.settings import get_default_user
 
 router = APIRouter()
 

@@ -2,8 +2,8 @@
 Conversational assistant recipe for general queries and assistance.
 """
 from datetime import datetime, timedelta
-from ..core.context_builder import ContextBuilder
-from ..core.ollama_client import OllamaClient
+from agent_core.context_builder import ContextBuilder
+from agent_core.ollama_client import OllamaClient
 import json
 
 

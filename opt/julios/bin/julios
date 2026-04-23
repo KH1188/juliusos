@@ -1,0 +1,24 @@
+#!/bin/bash
+# JuliOS Main Launcher
+# This script launches the mode selector
+
+JULIOS_ROOT="/home/julius/juliusos/opt/julios"
+MODE_SELECTOR="$JULIOS_ROOT/mode-selector/mode-selector.py"
+
+# Check if running in X session
+if [ -z "$DISPLAY" ]; then
+    echo "❌ Error: No X display found"
+    echo "   JuliOS requires an X11 session to run"
+    echo "   Try: startx"
+    exit 1
+fi
+
+# Check dependencies
+if ! command -v python3 &> /dev/null; then
+    echo "❌ Error: python3 not found"
+    exit 1
+fi
+
+# Launch mode selector
+echo "🚀 Launching JuliOS Mode Selector..."
+exec python3 "$MODE_SELECTOR"

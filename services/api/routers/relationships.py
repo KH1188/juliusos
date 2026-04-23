@@ -2,10 +2,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
-from ..database import get_db
-from ..models import User, NurtureCycle
-from ..schemas import NurtureCycleCreate, NurtureCycleUpdate, NurtureCycleResponse
-from .settings import get_default_user
+from database import get_db
+from models import User, NurtureCycle
+from schemas import NurtureCycleCreate, NurtureCycleUpdate, NurtureCycleResponse
+from routers.settings import get_default_user
 
 router = APIRouter()
 
@@ -17,7 +17,7 @@ def list_nurture_cycles(
 ):
     """List all nurture cycles with their contacts."""
     # Get all contacts for the user
-    from ..models import Contact
+    from models import Contact
     contacts = db.query(Contact).filter(Contact.user_id == user.id).all()
     contact_ids = [c.id for c in contacts]
 
@@ -36,7 +36,7 @@ def create_nurture_cycle(
 ):
     """Create a new nurture cycle for a contact."""
     # Verify the contact belongs to the user
-    from ..models import Contact
+    from models import Contact
     contact = db.query(Contact).filter(
         Contact.id == cycle.contact_id,
         Contact.user_id == user.id
@@ -73,7 +73,7 @@ def get_nurture_cycle(
         raise HTTPException(status_code=404, detail="Nurture cycle not found")
 
     # Verify the contact belongs to the user
-    from ..models import Contact
+    from models import Contact
     contact = db.query(Contact).filter(
         Contact.id == cycle.contact_id,
         Contact.user_id == user.id
@@ -99,7 +99,7 @@ def update_nurture_cycle(
         raise HTTPException(status_code=404, detail="Nurture cycle not found")
 
     # Verify the contact belongs to the user
-    from ..models import Contact
+    from models import Contact
     contact = db.query(Contact).filter(
         Contact.id == cycle.contact_id,
         Contact.user_id == user.id
@@ -129,7 +129,7 @@ def delete_nurture_cycle(
         raise HTTPException(status_code=404, detail="Nurture cycle not found")
 
     # Verify the contact belongs to the user
-    from ..models import Contact
+    from models import Contact
     contact = db.query(Contact).filter(
         Contact.id == cycle.contact_id,
         Contact.user_id == user.id
